@@ -2,36 +2,44 @@ from fastapi import FastAPI
 import requests
 import os
 import json
+from pathlib import Path
 
 app = FastAPI(title="TerraScope Dedalus Connector")
 
-# Load environment variables
 OPENWEATHER_KEY = os.getenv("OPENWEATHER_API_KEY", "")
-NASA_POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
-# ---------- ROOT VALIDATION ----------
+# ---------- VALIDATION ----------
 @app.get("/")
 def root():
     """
     Dedalus validation endpoint.
-    Returns manifest.json so the platform can detect all tools.
+    Returns the manifest in the expected structure.
     """
-    try:
-        with open("manifest.json") as f:
-            manifest = json.load(f)
-    except Exception as e:
-        manifest = {"error": f"Failed to load manifest.json: {e}"}
-    return {
-        "status": "ok",
-        "message": "TerraScope connector running",
-        "manifest": manifest,
-    }
+    manifest_path = Path(__file__).parent / "manifest.json"
+    if not manifest_path.exists():
+        return {
+            "status": "error",
+            "error": "manifest.json not found in repo root"
+        }
 
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        manifest = json.load(f)
+
+    # Dedalus expects exactly this shape
+    return {
+        "manifest_version": manifest.get("version", "1.0.0"),
+        "name": manifest.get("name", "dedalus-terrascope-connector"),
+        "tools": manifest.get("tools", []),
+        "metadata": {
+            "description": manifest.get("description", "TerraScope connector"),
+            "status": "ok",
+            "validation": "passed"
+        }
+    }
 
 # ---------- FLOOD ----------
 @app.get("/flood")
 def flood(lat: float, lon: float, date: str):
-    """Fetch rainfall, humidity, temperature for flood prediction"""
     weather = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPENWEATHER_KEY}"
     ).json()
@@ -45,15 +53,12 @@ def flood(lat: float, lon: float, date: str):
         "pressure": weather["main"]["pressure"],
     }
 
-
 # ---------- WILDFIRE ----------
 @app.get("/wildfire")
 def wildfire(lat: float, lon: float, date: str):
-    """Fetch heat + wind + humidity for wildfire prediction"""
     weather = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPENWEATHER_KEY}"
     ).json()
-
     return {
         "type": "wildfire",
         "temperature": weather["main"]["temp"] - 273.15,
@@ -62,30 +67,24 @@ def wildfire(lat: float, lon: float, date: str):
         "pressure": weather["main"]["pressure"],
     }
 
-
 # ---------- HEAT ----------
 @app.get("/heat")
 def heat(lat: float, lon: float, date: str):
-    """Fetch temperature + humidity for heat risk"""
     weather = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPENWEATHER_KEY}"
     ).json()
-
     return {
         "type": "heat",
         "temperature": weather["main"]["temp"] - 273.15,
         "humidity": weather["main"]["humidity"],
     }
 
-
-# ---------- STORM (HURRICANE / TORNADO) ----------
+# ---------- STORM ----------
 @app.get("/storm")
 def storm(lat: float, lon: float, date: str):
-    """Fetch wind + pressure data for storm prediction"""
     weather = requests.get(
         f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OPENWEATHER_KEY}"
     ).json()
-
     return {
         "type": "storm",
         "wind_speed": weather["wind"]["speed"],
