@@ -1,7 +1,7 @@
 [project]
 name = "dedalus-terrascope"
 version = "1.0.0"
-description = "Unified connector for TerraScope hazard prediction"
+description = "Unified connector for TerraScope hazard prediction (flood, wildfire, heat, storm)"
 authors = [{ name = "Nahom Wondimu" }]
 requires-python = ">=3.9"
 dependencies = [
