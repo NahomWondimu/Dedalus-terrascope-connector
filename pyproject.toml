@@ -1,0 +1,11 @@
+[project]
+name = "dedalus-terrascope"
+version = "1.0.0"
+description = "Unified connector for TerraScope hazard prediction"
+authors = [{ name = "Nahom Wondimu" }]
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi==0.115.0",
+    "uvicorn==0.29.0",
+    "requests==2.31.0"
+]
