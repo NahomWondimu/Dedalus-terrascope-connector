@@ -3,5 +3,5 @@ type: mcp-server
 language: python
 entrypoint: server.py
 runtime: fastapi
-manifest: manifest.json
+manifest_endpoint: /manifest
 version: 1.0.0
