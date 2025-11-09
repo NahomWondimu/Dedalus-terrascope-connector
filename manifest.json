@@ -1,0 +1,27 @@
+{
+  "name": "dedalus-terrascope",
+  "description": "Unified connector for TerraScope hazard data (flood, wildfire, heat, etc.)",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "flood-risk-api",
+      "description": "Fetches rainfall, humidity, and flood risk data",
+      "endpoint": "/flood"
+    },
+    {
+      "name": "wildfire-risk-api",
+      "description": "Fetches wildfire indicators (temperature, wind, vegetation)",
+      "endpoint": "/wildfire"
+    },
+    {
+      "name": "heat-risk-api",
+      "description": "Fetches and returns heat index metrics",
+      "endpoint": "/heat"
+    },
+    {
+      "name": "storm-risk-api",
+      "description": "Fetches hurricane/tornado wind and pressure data",
+      "endpoint": "/storm"
+    }
+  ]
+}
