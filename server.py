@@ -1,11 +1,32 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI
 import requests
 import os
+import json
 
 app = FastAPI(title="TerraScope Dedalus Connector")
 
+# Load environment variables
 OPENWEATHER_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 NASA_POWER_URL = "https://power.larc.nasa.gov/api/temporal/daily/point"
+
+# ---------- ROOT VALIDATION ----------
+@app.get("/")
+def root():
+    """
+    Dedalus validation endpoint.
+    Returns manifest.json so the platform can detect all tools.
+    """
+    try:
+        with open("manifest.json") as f:
+            manifest = json.load(f)
+    except Exception as e:
+        manifest = {"error": f"Failed to load manifest.json: {e}"}
+    return {
+        "status": "ok",
+        "message": "TerraScope connector running",
+        "manifest": manifest,
+    }
+
 
 # ---------- FLOOD ----------
 @app.get("/flood")
@@ -24,6 +45,7 @@ def flood(lat: float, lon: float, date: str):
         "pressure": weather["main"]["pressure"],
     }
 
+
 # ---------- WILDFIRE ----------
 @app.get("/wildfire")
 def wildfire(lat: float, lon: float, date: str):
@@ -40,6 +62,7 @@ def wildfire(lat: float, lon: float, date: str):
         "pressure": weather["main"]["pressure"],
     }
 
+
 # ---------- HEAT ----------
 @app.get("/heat")
 def heat(lat: float, lon: float, date: str):
@@ -53,6 +76,7 @@ def heat(lat: float, lon: float, date: str):
         "temperature": weather["main"]["temp"] - 273.15,
         "humidity": weather["main"]["humidity"],
     }
+
 
 # ---------- STORM (HURRICANE / TORNADO) ----------
 @app.get("/storm")
@@ -69,7 +93,3 @@ def storm(lat: float, lon: float, date: str):
         "humidity": weather["main"]["humidity"],
         "temperature": weather["main"]["temp"] - 273.15,
     }
-
-@app.get("/")
-def root():
-    return {"status": "TerraScope connector running", "endpoints": ["/flood", "/wildfire", "/heat", "/storm"]}
