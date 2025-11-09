@@ -92,3 +92,10 @@ def storm(lat: float, lon: float, date: str):
         "humidity": weather["main"]["humidity"],
         "temperature": weather["main"]["temp"] - 273.15,
     }
+
+
+@app.get("/manifest")
+def manifest():
+    with open("manifest.json") as f:
+        return json.load(f)
+
