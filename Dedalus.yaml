@@ -1,0 +1,8 @@
+name: dedalus-terrascope
+type: mcp-server
+language: python
+entrypoint: server.py
+runtime: fastapi
+description: Unified multi-hazard connector for TerraScope AI (flood, wildfire, heat, storm)
+version: 1.0.0
+manifest: manifest.json
