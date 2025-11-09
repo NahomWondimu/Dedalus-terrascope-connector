@@ -1,27 +1,51 @@
 {
   "name": "dedalus-terrascope",
-  "description": "Unified connector for TerraScope hazard data (flood, wildfire, heat, etc.)",
+  "description": "Unified connector for TerraScope hazard prediction (flood, wildfire, heat, storm).",
   "version": "1.0.0",
   "tools": [
     {
       "name": "flood-risk-api",
-      "description": "Fetches rainfall, humidity, and flood risk data",
-      "endpoint": "/flood"
+      "description": "Fetch rainfall, humidity, and flood risk data from OpenWeather.",
+      "method": "GET",
+      "endpoint": "/flood",
+      "args": {
+        "lat": "float",
+        "lon": "float",
+        "date": "string"
+      }
     },
     {
       "name": "wildfire-risk-api",
-      "description": "Fetches wildfire indicators (temperature, wind, vegetation)",
-      "endpoint": "/wildfire"
+      "description": "Fetch temperature, humidity, and wind data for wildfire risk.",
+      "method": "GET",
+      "endpoint": "/wildfire",
+      "args": {
+        "lat": "float",
+        "lon": "float",
+        "date": "string"
+      }
     },
     {
       "name": "heat-risk-api",
-      "description": "Fetches and returns heat index metrics",
-      "endpoint": "/heat"
+      "description": "Fetch heat index metrics (temperature, humidity).",
+      "method": "GET",
+      "endpoint": "/heat",
+      "args": {
+        "lat": "float",
+        "lon": "float",
+        "date": "string"
+      }
     },
     {
       "name": "storm-risk-api",
-      "description": "Fetches hurricane/tornado wind and pressure data",
-      "endpoint": "/storm"
+      "description": "Fetch wind and pressure metrics for hurricanes/tornadoes.",
+      "method": "GET",
+      "endpoint": "/storm",
+      "args": {
+        "lat": "float",
+        "lon": "float",
+        "date": "string"
+      }
     }
   ]
 }
